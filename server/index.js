@@ -7,7 +7,7 @@ const mysql = require("mysql2");
 const db = mysql.createPool({ 
     host: "localhost", 
     user: "root",
-    password: "",
+    password: "jeevanshi11",
     database: "crudproject"
     });
 
@@ -24,14 +24,52 @@ app.get("/api/get",  (req, res) => {
     });
 });
 
-app.get("/", (req, res) => {
-    // const sqlInsert = "INSERT INTO contactdb (name, email, contact) VALUES ('JEEVANSHII', 'JEEVANSHI.JB@GMAIL.COM', '8968517826')";
-    // db.query(sqlInsert, (error, result)=>{
-    //     console.log("error", error);
-    //     console.log("result", result);
-        res.send("Heloo express");
-    // });
+
+app.post("/api/post", (req, res) => {
+   const {name, email, contact} = req.body;
+   const sqlInsert = "INSERT INTO contactdb (name, email, contact) Values (?,?,?)"
+   db.query(sqlInsert,[name, email,contact], (err, results) =>
+   {
+       if(err){
+        console.log(err);
+       }
 });
+});
+
+app.delete("/api/remove/:id", (req, res) => {
+    const {id} = req.params;
+    const sqlRemove = "DELETE FROM contactdb WHERE id=?"
+    db.query(sqlRemove, id , (err, results) =>
+    {
+        if(err){
+         console.log(err);
+        }
+ });
+ });
+
+ app.get("/api/get/:id",  (req, res) => {
+    const{ id }=req.params;
+    const sqlGet = "SELECT * FROM contactdb WHERE id = ?";
+    db.query(sqlGet, id, (error, result)=>{
+        if(error){
+            console.log(error);
+        }
+            res.send(result);
+        });
+    });
+
+
+    app.put("/api/update/:id",  (req, res) => {
+        const{id}=req.params;
+        const {name, email, contact} = req.body;
+        const sqlUpdate = "UPDATE contactdb SET name = ?, email = ?, contact = ? WHERE id = ?";
+        db.query(sqlUpdate,[name, email, contact, id], (error, result)=>{
+            if(error){
+                console.log(error);
+            }
+                res.send(result);
+            });
+        });
 
 app.listen(8000, ()=>{
     console.log("Server is running on port 8000");
